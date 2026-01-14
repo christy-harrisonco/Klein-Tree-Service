@@ -1,1 +1,1 @@
-// Logic consolidated into index.html for static deployment.
+// This file is no longer needed. Everything is in index.html for compatibility.
