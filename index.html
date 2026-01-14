@@ -6,17 +6,17 @@
     <title>Klein Tree Services | Paynesville, MN</title>
     <meta name="description" content="Professional tree removal and arborist care by Keith and Kevin Klein in Paynesville, MN." />
     
-    <!-- Fallback favicon link -->
-    <link rel="icon" type="image/png" href="./favicon.png">
+    <!-- Link to favicon. Logo component handles fallback if this is missing -->
+    <link rel="icon" type="image/png" href="favicon.png">
     
-    <!-- Runtime Tailwind CSS -->
+    <!-- Tailwind CSS Runtime -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              klein: { orange: '#f37021', dark: '#0f0c0b', gold: '#c5a059' },
+              klein: { orange: '#f37021', dark: '#0f0c0b' },
               timber: { dark: '#0f0c0b', muted: '#1a1715', light: '#a3a3a3' }
             },
             fontFamily: {
@@ -34,37 +34,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:ital,wght@0,700;0,900;1,900&family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
     
     <style>
-      body { font-family: 'Inter', sans-serif; background-color: #0f0c0b; color: #fff; margin: 0; padding: 0; overflow-x: hidden; }
+      body { background-color: #0f0c0b; color: #fff; margin: 0; }
       .btn-premium { background-color: #f37021; transition: all 0.3s ease; text-transform: uppercase; font-weight: 900; letter-spacing: 0.1em; }
       .btn-premium:hover { background-color: #fff; color: #f37021; transform: translateY(-2px); box-shadow: 0 10px 20px -10px #f37021; }
       .bg-timber-grain { background-color: #1a1715; background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); }
       
-      /* Loading State */
+      /* Loading Screen Logic */
       #root:empty::after { 
-        content: "INITIALIZING KLEIN SYSTEMS..."; 
-        position: absolute; 
-        top: 50%; 
-        left: 50%; 
-        transform: translate(-50%, -50%); 
-        font-family: 'Oswald', sans-serif; 
-        text-transform: uppercase; 
-        letter-spacing: 0.5em; 
-        opacity: 0.5;
+        content: "IGNITING THE SAWS..."; 
+        position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+        font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 0.5em; opacity: 0.5;
         animation: pulse 2s infinite;
       }
-      @keyframes pulse { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.6; } }
-
-      .glass { backdrop-filter: blur(12px); background: rgba(15, 12, 11, 0.8); border-bottom: 1px solid rgba(255,255,255,0.05); }
-      .hide-scrollbar::-webkit-scrollbar { display: none; }
+      @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+      .glass { backdrop-filter: blur(12px); background: rgba(15, 12, 11, 0.85); border-bottom: 1px solid rgba(255,255,255,0.05); }
     </style>
 <script type="importmap">
 {
   "imports": {
-    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
     "react": "https://esm.sh/react@^19.2.3",
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
     "vite": "https://esm.sh/vite@^7.3.1",
-    "@google/genai": "https://esm.sh/@google/genai@^1.35.0",
     "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
   }
 }
@@ -73,25 +65,25 @@
 <body class="antialiased scroll-smooth">
     <div id="root"></div>
 
-    <!-- Standalone Script: No Vite or External index.tsx needed -->
     <script type="module">
-        import React, { useState, useEffect, useRef } from 'https://esm.sh/react@19.0.0';
-        import { createRoot } from 'https://esm.sh/react-dom@19.0.0/client';
-        import * as Lucide from 'https://esm.sh/lucide-react@0.475.0';
-        import { GoogleGenAI } from 'https://esm.sh/@google/genai@1.34.0';
+        // Direct browser-ready imports from ESM.sh
+        import React, { useState, useEffect, useRef } from 'https://esm.sh/react@19.0.0?bundle';
+        import { createRoot } from 'https://esm.sh/react-dom@19.0.0/client?bundle';
+        import * as Lucide from 'https://esm.sh/lucide-react@0.475.0?bundle';
+        import { GoogleGenAI } from 'https://esm.sh/@google/genai@1.34.0?bundle';
 
-        // Fix for "process is not defined" in browser
-        window.process = window.process || { env: { API_KEY: '' } };
+        // Helper to prevent "process is not defined" errors
+        window.process = { env: { API_KEY: '' } };
 
-        // --- Components ---
+        // --- COMPONENTS ---
 
         const Logo = ({ className = "h-12 w-12" }) => {
             const [hasError, setHasError] = useState(false);
             return (
-                <div className={`relative overflow-hidden rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center transition-all ${className} ${hasError ? 'bg-klein-orange shadow-[0_0_15px_rgba(243,112,33,0.3)]' : ''}`}>
+                <div className={`relative overflow-hidden rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center transition-all ${className} ${hasError ? 'bg-klein-orange shadow-lg' : ''}`}>
                     {!hasError ? (
                         <img 
-                            src="./favicon.png" 
+                            src="favicon.png" 
                             alt="K" 
                             className="w-full h-full object-contain p-1.5"
                             onError={() => setHasError(true)}
@@ -103,28 +95,11 @@
             );
         };
 
-        const generateTreeResponse = async (userMessage, history) => {
-          const apiKey = process.env.API_KEY || '';
-          if (!apiKey) return "Keith's phone is out of service range. Call (320) 428-6726.";
-          
-          const ai = new GoogleGenAI({ apiKey });
-          const systemInstruction = "You are the Shop Foreman for Klein Tree Services. Owners are Keith and Kevin Klein. Dry, small-town professional tone. Concisely answer tree service questions. Direct price inquiries to (320) 428-6726.";
-          
-          try {
-            const response = await ai.models.generateContent({
-              model: 'gemini-3-flash-preview',
-              contents: [...history, { role: 'user', parts: [{ text: userMessage }] }],
-              config: { systemInstruction, temperature: 0.8 },
-            });
-            return response.text || "Call Keith: (320) 428-6726.";
-          } catch (e) { return "Signal's spotty. Call the brothers at (320) 428-6726."; }
-        };
-
         const App = () => {
             const [isScrolled, setIsScrolled] = useState(false);
             const [isMenuOpen, setIsMenuOpen] = useState(false);
             const [chatOpen, setChatOpen] = useState(false);
-            const [messages, setMessages] = useState([{ role: 'model', text: "Foreman here. What's on your mind?" }]);
+            const [messages, setMessages] = useState([{ role: 'model', text: "Foreman here. Keith's up a tree. How can I help?" }]);
             const [chatInput, setChatInput] = useState('');
             const [isTyping, setIsTyping] = useState(false);
             const chatEndRef = useRef(null);
@@ -150,10 +125,20 @@
                 setChatInput('');
                 setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
                 setIsTyping(true);
-                const history = messages.map(m => ({ role: m.role, parts: [{ text: m.text }] }));
-                const reply = await generateTreeResponse(userMsg, history);
-                setMessages(prev => [...prev, { role: 'model', text: reply }]);
-                setIsTyping(false);
+                
+                try {
+                    const ai = new GoogleGenAI({ apiKey: window.process.env.API_KEY });
+                    const response = await ai.models.generateContent({
+                        model: 'gemini-3-flash-preview',
+                        contents: [{ role: 'user', parts: [{ text: userMsg }] }],
+                        config: { systemInstruction: "You are the Shop Foreman for Klein Tree Services (Paynesville, MN). Owners are Keith and Kevin Klein. Tone: Dry, professional arborist. Concise." }
+                    });
+                    setMessages(prev => [...prev, { role: 'model', text: response.text || "Call Keith: (320) 428-6726." }]);
+                } catch (e) {
+                    setMessages(prev => [...prev, { role: 'model', text: "Signal's spotty. Call the crew: (320) 428-6726." }]);
+                } finally {
+                    setIsTyping(false);
+                }
             };
 
             return (
@@ -161,11 +146,11 @@
                     {/* Header */}
                     <header className={`fixed w-full z-50 transition-all duration-500 ${isScrolled ? 'glass py-3' : 'bg-transparent py-8'}`}>
                         <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
-                            <div className="flex items-center space-x-4 cursor-pointer group" onClick={() => scrollTo('#home')}>
+                            <div className="flex items-center space-x-4 cursor-pointer" onClick={() => scrollTo('#home')}>
                                 <Logo className="h-14 w-14" />
                                 <div className="flex flex-col">
                                     <span className="font-heading text-xl md:text-3xl font-black text-white uppercase italic leading-none">
-                                        KLEIN TREE <span className="text-klein-orange italic">SERVICES</span>
+                                        KLEIN TREE <span className="text-klein-orange">SERVICES</span>
                                     </span>
                                     <span className="text-[9px] font-bold uppercase tracking-[0.6em] text-white/40">PAYNESVILLE, MN</span>
                                 </div>
@@ -203,13 +188,13 @@
                         </div>
                         <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 text-center lg:text-left">
                             <div className="inline-block px-4 py-2 bg-klein-orange/20 border-l-4 border-klein-orange mb-8 backdrop-blur-sm">
-                                <span className="font-rugged text-sm uppercase tracking-[0.3em] font-bold">The Klein Brothers • MN Arborists</span>
+                                <span className="font-rugged text-sm uppercase tracking-[0.3em] font-bold italic">The Klein Brothers • Paynesville MN</span>
                             </div>
                             <h1 className="text-6xl md:text-9xl font-heading font-black leading-none mb-8 italic uppercase tracking-tighter">
                                 PRECISION<br/><span className="text-klein-orange">POWER.</span>
                             </h1>
                             <p className="text-2xl md:text-4xl font-marker mb-12 max-w-3xl leading-relaxed drop-shadow-2xl">
-                                We leave your yard cleaner than we found it. Professional results, zero debris.
+                                We leave your yard cleaner than we found it. Keith's on the climb, Kevin's on the line.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6">
                                 <button onClick={() => scrollTo('#contact')} className="btn-premium px-12 py-6 text-xl flex items-center justify-center space-x-3">
@@ -223,7 +208,7 @@
                         </div>
                     </section>
 
-                    {/* Simple Services */}
+                    {/* Services */}
                     <section id="services" className="py-32 bg-timber-muted relative">
                         <div className="max-w-7xl mx-auto px-4">
                              <div className="mb-20">
@@ -237,8 +222,8 @@
                                     { title: 'Stump Grinding', icon: Lucide.Tractor, desc: 'Deep-set grinding to clear land for new grass or structure footings.' },
                                     { title: 'Storm Response', icon: Lucide.ShieldAlert, desc: '24/7 emergency cleanup for central Minnesota and lake areas.' }
                                 ].map(s => (
-                                    <div key={s.title} className="bg-timber-dark border border-white/5 p-10 shadow-2xl hover:border-klein-orange transition-all">
-                                        <div className="bg-klein-orange p-4 w-fit mb-6"><s.icon /></div>
+                                    <div key={s.title} className="bg-timber-dark border border-white/5 p-10 shadow-2xl hover:border-klein-orange transition-all group">
+                                        <div className="bg-klein-orange p-4 w-fit mb-6 transition-transform group-hover:scale-110"><s.icon /></div>
                                         <h4 className="text-3xl font-heading uppercase font-black italic mb-4">{s.title}</h4>
                                         <p className="text-timber-light leading-relaxed">{s.desc}</p>
                                     </div>
@@ -247,16 +232,45 @@
                         </div>
                     </section>
 
-                    {/* Contact Form */}
-                    <section id="contact" className="py-32 bg-timber-dark border-t border-white/5">
+                    {/* About */}
+                    <section id="about" className="py-32 bg-timber-dark relative overflow-hidden">
+                        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-20 items-center">
+                            <div className="relative">
+                                <img src="https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?auto=format&fit=crop&q=80&w=1200" className="w-full h-[600px] object-cover grayscale brightness-50" />
+                                <div className="absolute bottom-10 -right-10 bg-white p-8 shadow-2xl max-w-sm hidden md:block">
+                                    <p className="font-marker text-timber-dark text-2xl italic leading-tight">"One family, zero shortcuts. We treat your yard like our own."</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h2 className="text-klein-orange font-rugged font-bold tracking-[0.5em] text-sm mb-4 uppercase">OUR LEGACY</h2>
+                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic mb-8">THE KLEIN <br/> BROTHERS.</h3>
+                                <p className="text-xl text-timber-light leading-relaxed mb-8">
+                                    Keith handles the technical precision work in the canopy—climbing and cutting that requires absolute focus. Kevin works alongside him on the ground, keeping the operation running smooth and ensuring the site stays safe.
+                                </p>
+                                <div className="grid grid-cols-2 gap-8">
+                                    <div className="border-l-4 border-klein-orange pl-4">
+                                        <span className="block font-heading text-3xl italic uppercase">100%</span>
+                                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">Fully Insured</span>
+                                    </div>
+                                    <div className="border-l-4 border-white pl-4">
+                                        <span className="block font-heading text-3xl italic uppercase">LOCAL</span>
+                                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">Paynesville Proud</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Contact */}
+                    <section id="contact" className="py-32 bg-timber-muted">
                         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-20">
                             <div>
                                 <h2 className="text-klein-orange font-rugged font-bold tracking-[0.5em] text-sm mb-4 uppercase">CONNECT</h2>
-                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic mb-12 leading-none">FREE <br/> QUOTES.</h3>
+                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic mb-12">FREE <br/> QUOTES.</h3>
                                 <div className="space-y-12">
                                     <div className="border-l-4 border-klein-orange pl-8">
-                                        <p className="font-marker text-white/40 text-xl mb-2 italic">"Direct line"</p>
-                                        <a href="tel:320-428-6726" className="text-4xl md:text-6xl font-heading text-white hover:text-klein-orange transition-colors">(320) 428-6726</a>
+                                        <p className="font-marker text-white/40 text-xl mb-2 italic">"Direct Dispatch"</p>
+                                        <a href="tel:320-428-6726" className="text-4xl md:text-6xl font-heading text-white hover:text-klein-orange transition-colors tracking-tight">(320) 428-6726</a>
                                     </div>
                                 </div>
                             </div>
@@ -264,13 +278,13 @@
                                 <form action="https://formspree.io/f/mwvpgjpe" method="POST" className="space-y-10">
                                     <input type="text" name="name" required className="w-full border-b-2 border-zinc-100 py-4 font-heading text-xl outline-none focus:border-klein-orange transition-all" placeholder="YOUR NAME" />
                                     <input type="tel" name="phone" required className="w-full border-b-2 border-zinc-100 py-4 font-heading text-xl outline-none focus:border-klein-orange transition-all" placeholder="PHONE NUMBER" />
-                                    <button type="submit" className="w-full bg-timber-dark text-white py-6 font-heading text-2xl uppercase italic tracking-widest hover:bg-klein-orange transition-all">SEND DISPATCH</button>
+                                    <button type="submit" className="w-full bg-timber-dark text-white py-6 font-heading text-2xl uppercase italic tracking-widest hover:bg-klein-orange transition-all">SEND REQUEST</button>
                                 </form>
                             </div>
                         </div>
                     </section>
 
-                    {/* AI Chat FAB */}
+                    {/* AI Chat */}
                     <div className="fixed bottom-8 right-8 z-[70]">
                         {chatOpen && (
                             <div className="absolute bottom-20 right-0 w-80 sm:w-96 h-[500px] bg-timber-dark border-4 border-zinc-800 shadow-2xl flex flex-col animate-in slide-in-from-bottom-5">
@@ -289,7 +303,7 @@
                                             </div>
                                         </div>
                                     ))}
-                                    {isTyping && <div className="text-white/30 font-heading text-xs tracking-widest italic animate-pulse">CALCULATING...</div>}
+                                    {isTyping && <div className="text-white/30 font-heading text-xs tracking-widest italic animate-pulse uppercase">CALCULATING...</div>}
                                     <div ref={chatEndRef} />
                                 </div>
                                 <form onSubmit={handleChat} className="p-4 bg-white flex space-x-2">
@@ -299,7 +313,7 @@
                             </div>
                         )}
                         <button onClick={() => setChatOpen(!chatOpen)} className="bg-timber-dark border-4 border-zinc-800 p-5 shadow-2xl hover:border-klein-orange transition-all">
-                            <Lucide.MessageSquare className="h-8 w-8" />
+                            <Lucide.MessageSquare className="h-8 w-8 text-white" />
                         </button>
                     </div>
                 </div>
