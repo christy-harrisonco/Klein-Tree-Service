@@ -6,8 +6,8 @@
     <title>Klein Tree Services | Paynesville, MN</title>
     <meta name="description" content="Professional tree removal and arborist care by Keith and Kevin Klein in Paynesville, MN." />
     
-    <!-- Link to favicon. Logo component handles fallback if this is missing -->
-    <link rel="icon" type="image/png" href="favicon.png">
+    <!-- Fallback Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%23f37021%22 font-weight=%22bold%22 font-style=%22italic%22>K</text></svg>">
     
     <!-- Tailwind CSS Runtime -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,12 +34,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=Montserrat:ital,wght@0,700;0,900;1,900&family=Oswald:wght@400;700&family=Permanent+Marker&display=swap" rel="stylesheet">
     
     <style>
-      body { background-color: #0f0c0b; color: #fff; margin: 0; }
+      body { background-color: #0f0c0b; color: #fff; margin: 0; padding: 0; overflow-x: hidden; }
       .btn-premium { background-color: #f37021; transition: all 0.3s ease; text-transform: uppercase; font-weight: 900; letter-spacing: 0.1em; }
       .btn-premium:hover { background-color: #fff; color: #f37021; transform: translateY(-2px); box-shadow: 0 10px 20px -10px #f37021; }
       .bg-timber-grain { background-color: #1a1715; background-image: url("https://www.transparenttextures.com/patterns/wood-pattern.png"); }
       
-      /* Loading Screen Logic */
+      /* Professional Loading Screen */
       #root:empty::after { 
         content: "IGNITING THE SAWS..."; 
         position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
@@ -65,35 +65,23 @@
 <body class="antialiased scroll-smooth">
     <div id="root"></div>
 
+    <!-- MAIN APP SCRIPT -->
     <script type="module">
-        // Direct browser-ready imports from ESM.sh
-        import React, { useState, useEffect, useRef } from 'https://esm.sh/react@19.0.0?bundle';
-        import { createRoot } from 'https://esm.sh/react-dom@19.0.0/client?bundle';
-        import * as Lucide from 'https://esm.sh/lucide-react@0.475.0?bundle';
-        import { GoogleGenAI } from 'https://esm.sh/@google/genai@1.34.0?bundle';
+        import React, { useState, useEffect, useRef } from 'https://esm.sh/react@19.0.0';
+        import { createRoot } from 'https://esm.sh/react-dom@19.0.0/client';
+        import * as Lucide from 'https://esm.sh/lucide-react@0.475.0';
+        import { GoogleGenAI } from 'https://esm.sh/@google/genai@1.34.0';
 
-        // Helper to prevent "process is not defined" errors
+        // Mock process for browser safety
         window.process = { env: { API_KEY: '' } };
 
-        // --- COMPONENTS ---
+        // --- UI COMPONENTS ---
 
-        const Logo = ({ className = "h-12 w-12" }) => {
-            const [hasError, setHasError] = useState(false);
-            return (
-                <div className={`relative overflow-hidden rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center transition-all ${className} ${hasError ? 'bg-klein-orange shadow-lg' : ''}`}>
-                    {!hasError ? (
-                        <img 
-                            src="favicon.png" 
-                            alt="K" 
-                            className="w-full h-full object-contain p-1.5"
-                            onError={() => setHasError(true)}
-                        />
-                    ) : (
-                        <span className="text-white font-black text-2xl italic tracking-tighter">K</span>
-                    )}
-                </div>
-            );
-        };
+        const Logo = ({ className = "h-12 w-12" }) => (
+            <div className={`relative overflow-hidden rounded-lg bg-zinc-900 border border-white/10 flex items-center justify-center transition-all ${className} bg-klein-orange shadow-lg`}>
+                <span className="text-white font-black text-2xl italic tracking-tighter">K</span>
+            </div>
+        );
 
         const App = () => {
             const [isScrolled, setIsScrolled] = useState(false);
@@ -127,13 +115,15 @@
                 setIsTyping(true);
                 
                 try {
-                    const ai = new GoogleGenAI({ apiKey: window.process.env.API_KEY });
+                    const ai = new GoogleGenAI({ apiKey: window.process.env.API_KEY || '' });
                     const response = await ai.models.generateContent({
                         model: 'gemini-3-flash-preview',
                         contents: [{ role: 'user', parts: [{ text: userMsg }] }],
-                        config: { systemInstruction: "You are the Shop Foreman for Klein Tree Services (Paynesville, MN). Owners are Keith and Kevin Klein. Tone: Dry, professional arborist. Concise." }
+                        config: { 
+                            systemInstruction: "You are the Shop Foreman for Klein Tree Services in Paynesville, MN. Owners are brothers Keith and Kevin Klein. Tone: Dry, professional, small-town arborist. Direct pricing questions to (320) 428-6726." 
+                        }
                     });
-                    setMessages(prev => [...prev, { role: 'model', text: response.text || "Call Keith: (320) 428-6726." }]);
+                    setMessages(prev => [...prev, { role: 'model', text: response.text || "Contact Keith at (320) 428-6726." }]);
                 } catch (e) {
                     setMessages(prev => [...prev, { role: 'model', text: "Signal's spotty. Call the crew: (320) 428-6726." }]);
                 } finally {
@@ -165,7 +155,7 @@
                                 </a>
                             </nav>
                             <button className="lg:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                                {isMenuOpen ? <Lucide.X /> : <Lucide.Menu />}
+                                {isMenuOpen ? <Lucide.X className="h-8 w-8" /> : <Lucide.Menu className="h-8 w-8" />}
                             </button>
                         </div>
                     </header>
@@ -173,14 +163,14 @@
                     {/* Mobile Menu */}
                     {isMenuOpen && (
                         <div className="fixed inset-0 z-[60] bg-timber-dark flex flex-col items-center justify-center space-y-8 p-6">
-                             <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8"><Lucide.X className="h-10 w-10 text-white" /></button>
+                             <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-white"><Lucide.X className="h-10 w-10" /></button>
                              {['Home', 'Services', 'About', 'Contact'].map(item => (
                                 <button key={item} onClick={() => scrollTo(`#${item.toLowerCase()}`)} className="text-5xl font-heading uppercase italic tracking-tighter">{item}</button>
                              ))}
                         </div>
                     )}
 
-                    {/* Hero */}
+                    {/* Hero Section */}
                     <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
                         <div className="absolute inset-0 z-0">
                             <img src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?q=80&w=1920&auto=format&fit=crop" className="w-full h-full object-cover opacity-40" />
@@ -188,32 +178,32 @@
                         </div>
                         <div className="relative z-10 max-w-7xl mx-auto px-4 py-20 text-center lg:text-left">
                             <div className="inline-block px-4 py-2 bg-klein-orange/20 border-l-4 border-klein-orange mb-8 backdrop-blur-sm">
-                                <span className="font-rugged text-sm uppercase tracking-[0.3em] font-bold italic">The Klein Brothers • Paynesville MN</span>
+                                <span className="font-rugged text-sm uppercase tracking-[0.3em] font-bold italic">The Klein Brothers • MN Arborists</span>
                             </div>
                             <h1 className="text-6xl md:text-9xl font-heading font-black leading-none mb-8 italic uppercase tracking-tighter">
                                 PRECISION<br/><span className="text-klein-orange">POWER.</span>
                             </h1>
                             <p className="text-2xl md:text-4xl font-marker mb-12 max-w-3xl leading-relaxed drop-shadow-2xl">
-                                We leave your yard cleaner than we found it. Keith's on the climb, Kevin's on the line.
+                                We leave your yard cleaner than we found it. Keith's up the trunk, Kevin's on the line.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-6">
                                 <button onClick={() => scrollTo('#contact')} className="btn-premium px-12 py-6 text-xl flex items-center justify-center space-x-3">
                                     <span>GET A QUOTE</span>
-                                    <Lucide.ArrowRight />
+                                    <Lucide.ArrowRight className="h-6 w-6" />
                                 </button>
-                                <button onClick={() => scrollTo('#services')} className="px-12 py-6 border-2 border-white/20 hover:border-white transition-all font-bold tracking-widest bg-white/5">
+                                <button onClick={() => scrollTo('#services')} className="px-12 py-6 border-2 border-white/20 hover:border-white transition-all font-bold tracking-widest bg-white/5 uppercase">
                                     OUR WORK
                                 </button>
                             </div>
                         </div>
                     </section>
 
-                    {/* Services */}
+                    {/* Services Section */}
                     <section id="services" className="py-32 bg-timber-muted relative">
                         <div className="max-w-7xl mx-auto px-4">
                              <div className="mb-20">
                                 <h2 className="text-klein-orange font-rugged font-bold tracking-[0.5em] text-sm mb-4">CAPABILITIES</h2>
-                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic">THE SERVICE <br/><span className="text-white/10 italic">MENU.</span></h3>
+                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic">THE SERVICE <br/><span className="text-white/10 italic font-black">MENU.</span></h3>
                              </div>
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                                 {[
@@ -223,7 +213,9 @@
                                     { title: 'Storm Response', icon: Lucide.ShieldAlert, desc: '24/7 emergency cleanup for central Minnesota and lake areas.' }
                                 ].map(s => (
                                     <div key={s.title} className="bg-timber-dark border border-white/5 p-10 shadow-2xl hover:border-klein-orange transition-all group">
-                                        <div className="bg-klein-orange p-4 w-fit mb-6 transition-transform group-hover:scale-110"><s.icon /></div>
+                                        <div className="bg-klein-orange p-4 w-fit mb-6 transition-transform group-hover:scale-110">
+                                            <s.icon className="h-8 w-8 text-white" />
+                                        </div>
                                         <h4 className="text-3xl font-heading uppercase font-black italic mb-4">{s.title}</h4>
                                         <p className="text-timber-light leading-relaxed">{s.desc}</p>
                                     </div>
@@ -232,52 +224,23 @@
                         </div>
                     </section>
 
-                    {/* About */}
-                    <section id="about" className="py-32 bg-timber-dark relative overflow-hidden">
-                        <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-20 items-center">
-                            <div className="relative">
-                                <img src="https://images.unsplash.com/photo-1542332213-9b5a5a3fad35?auto=format&fit=crop&q=80&w=1200" className="w-full h-[600px] object-cover grayscale brightness-50" />
-                                <div className="absolute bottom-10 -right-10 bg-white p-8 shadow-2xl max-w-sm hidden md:block">
-                                    <p className="font-marker text-timber-dark text-2xl italic leading-tight">"One family, zero shortcuts. We treat your yard like our own."</p>
-                                </div>
-                            </div>
-                            <div>
-                                <h2 className="text-klein-orange font-rugged font-bold tracking-[0.5em] text-sm mb-4 uppercase">OUR LEGACY</h2>
-                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic mb-8">THE KLEIN <br/> BROTHERS.</h3>
-                                <p className="text-xl text-timber-light leading-relaxed mb-8">
-                                    Keith handles the technical precision work in the canopy—climbing and cutting that requires absolute focus. Kevin works alongside him on the ground, keeping the operation running smooth and ensuring the site stays safe.
-                                </p>
-                                <div className="grid grid-cols-2 gap-8">
-                                    <div className="border-l-4 border-klein-orange pl-4">
-                                        <span className="block font-heading text-3xl italic uppercase">100%</span>
-                                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">Fully Insured</span>
-                                    </div>
-                                    <div className="border-l-4 border-white pl-4">
-                                        <span className="block font-heading text-3xl italic uppercase">LOCAL</span>
-                                        <span className="text-[10px] uppercase tracking-widest font-bold text-white/40">Paynesville Proud</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    {/* Contact */}
-                    <section id="contact" className="py-32 bg-timber-muted">
+                    {/* Contact Section */}
+                    <section id="contact" className="py-32 bg-timber-dark border-t border-white/5">
                         <div className="max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-20">
                             <div>
                                 <h2 className="text-klein-orange font-rugged font-bold tracking-[0.5em] text-sm mb-4 uppercase">CONNECT</h2>
-                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic mb-12">FREE <br/> QUOTES.</h3>
+                                <h3 className="text-6xl md:text-8xl font-heading font-black italic uppercase italic mb-12 leading-none">FREE <br/> QUOTES.</h3>
                                 <div className="space-y-12">
                                     <div className="border-l-4 border-klein-orange pl-8">
                                         <p className="font-marker text-white/40 text-xl mb-2 italic">"Direct Dispatch"</p>
-                                        <a href="tel:320-428-6726" className="text-4xl md:text-6xl font-heading text-white hover:text-klein-orange transition-colors tracking-tight">(320) 428-6726</a>
+                                        <a href="tel:320-428-6726" className="text-4xl md:text-6xl font-heading text-white hover:text-klein-orange transition-colors tracking-tight font-black italic">(320) 428-6726</a>
                                     </div>
                                 </div>
                             </div>
                             <div className="bg-white p-10 md:p-16 text-timber-dark shadow-2xl">
                                 <form action="https://formspree.io/f/mwvpgjpe" method="POST" className="space-y-10">
-                                    <input type="text" name="name" required className="w-full border-b-2 border-zinc-100 py-4 font-heading text-xl outline-none focus:border-klein-orange transition-all" placeholder="YOUR NAME" />
-                                    <input type="tel" name="phone" required className="w-full border-b-2 border-zinc-100 py-4 font-heading text-xl outline-none focus:border-klein-orange transition-all" placeholder="PHONE NUMBER" />
+                                    <input type="text" name="name" required className="w-full border-b-2 border-zinc-100 py-4 font-heading text-xl outline-none focus:border-klein-orange transition-all text-zinc-900" placeholder="YOUR NAME" />
+                                    <input type="tel" name="phone" required className="w-full border-b-2 border-zinc-100 py-4 font-heading text-xl outline-none focus:border-klein-orange transition-all text-zinc-900" placeholder="PHONE NUMBER" />
                                     <button type="submit" className="w-full bg-timber-dark text-white py-6 font-heading text-2xl uppercase italic tracking-widest hover:bg-klein-orange transition-all">SEND REQUEST</button>
                                 </form>
                             </div>
@@ -287,18 +250,18 @@
                     {/* AI Chat */}
                     <div className="fixed bottom-8 right-8 z-[70]">
                         {chatOpen && (
-                            <div className="absolute bottom-20 right-0 w-80 sm:w-96 h-[500px] bg-timber-dark border-4 border-zinc-800 shadow-2xl flex flex-col animate-in slide-in-from-bottom-5">
+                            <div className="absolute bottom-20 right-0 w-80 sm:w-96 h-[500px] bg-timber-dark border-4 border-zinc-800 shadow-2xl flex flex-col animate-in slide-in-from-bottom-5 overflow-hidden">
                                 <div className="bg-white p-4 flex justify-between items-center text-timber-dark border-b-4 border-klein-orange">
                                     <div className="flex items-center space-x-3 italic">
-                                        <Lucide.Coffee className="text-klein-orange" />
-                                        <span className="font-heading text-2xl uppercase">FOREMAN</span>
+                                        <Lucide.Coffee className="text-klein-orange h-6 w-6" />
+                                        <span className="font-heading text-2xl uppercase font-black">FOREMAN</span>
                                     </div>
-                                    <button onClick={() => setChatOpen(false)}><Lucide.X /></button>
+                                    <button onClick={() => setChatOpen(false)}><Lucide.X className="h-6 w-6" /></button>
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-6 bg-timber-grain space-y-4">
                                     {messages.map((m, i) => (
                                         <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                            <div className={`p-4 font-rugged font-bold text-sm max-w-[85%] ${m.role === 'user' ? 'bg-klein-orange italic' : 'bg-white text-zinc-900 border-l-4 border-klein-orange'}`}>
+                                            <div className={`p-4 font-rugged font-bold text-sm max-w-[85%] ${m.role === 'user' ? 'bg-klein-orange italic text-white' : 'bg-white text-zinc-900 border-l-4 border-klein-orange'}`}>
                                                 {m.text}
                                             </div>
                                         </div>
@@ -308,7 +271,9 @@
                                 </div>
                                 <form onSubmit={handleChat} className="p-4 bg-white flex space-x-2">
                                     <input value={chatInput} onChange={e => setChatInput(e.target.value)} placeholder="ENTER INTEL..." className="flex-1 bg-zinc-100 px-4 font-rugged text-xs uppercase text-zinc-900 outline-none" />
-                                    <button className="bg-zinc-900 text-white p-3 hover:bg-klein-orange transition-colors"><Lucide.Send /></button>
+                                    <button className="bg-zinc-900 text-white p-3 hover:bg-klein-orange transition-colors">
+                                        <Lucide.Send className="h-5 w-5" />
+                                    </button>
                                 </form>
                             </div>
                         )}
@@ -321,7 +286,9 @@
         };
 
         const rootElement = document.getElementById('root');
-        createRoot(rootElement).render(React.createElement(App));
+        if (rootElement) {
+            createRoot(rootElement).render(React.createElement(App));
+        }
     </script>
 </body>
 </html>

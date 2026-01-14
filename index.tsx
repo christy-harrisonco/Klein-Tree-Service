@@ -1,0 +1,1 @@
+// Logic consolidated into index.html for static deployment.
